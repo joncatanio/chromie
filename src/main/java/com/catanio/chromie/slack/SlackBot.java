@@ -24,34 +24,50 @@ import java.util.regex.Matcher;
 @JBot
 @Profile("slack")
 public class SlackBot extends Bot {
+   private static final Logger logger = LoggerFactory.getLogger(SlackBot.class);
 
-    private static final Logger logger = LoggerFactory.getLogger(SlackBot.class);
+   // Regular Expressions
+   private static final String INC_RE = "<@(?<uid>[\\p{Alpha}0-9]+)>\\s?\\+\\+";
+   private static final String DEC_RE = "<@(?<uid>[\\p{Alpha}0-9]+)>\\s?--";
 
-    @Value("${slackBotToken}")
-    private String slackToken;
+   @Value("${slackBotToken}")
+   private String slackToken;
 
-    @Override
-    public String getSlackToken() {
-        return slackToken;
-    }
+   @Override
+   public String getSlackToken() {
+      return slackToken;
+   }
 
-    @Override
-    public Bot getSlackBot() {
-        return this;
-    }
+   @Override
+   public Bot getSlackBot() {
+      return this;
+   }
 
-    /**
-     * Invoked when the bot receives a direct mention (@botname: message)
-     * or a direct message. NOTE: These two event types are added by jbot
-     * to make your task easier, Slack doesn't have any direct way to
-     * determine these type of events.
-     *
-     * @param session
-     * @param event
-     */
-    @Controller(events = {EventType.DIRECT_MENTION, EventType.DIRECT_MESSAGE})
-    public void onReceiveDM(WebSocketSession session, Event event) {
-        reply(session, event, "Hi, I am " + slackService.getCurrentUser().getName());
-    }
+   /**
+    * Invoked when the bot receives a direct mention (@botname: message)
+    * or a direct message. NOTE: These two event types are added by jbot
+    * to make your task easier, Slack doesn't have any direct way to
+    * determine these type of events.
+    *
+    * @param session
+    * @param event
+    */
+   @Controller(events = {EventType.DIRECT_MENTION, EventType.DIRECT_MESSAGE})
+   public void onReceiveDM(WebSocketSession session, Event event) {
+      reply(session, event, "Hi, I am " + slackService.getCurrentUser().getName());
+   }
 
+   @Controller(events = EventType.MESSAGE, pattern = INC_RE)
+   public void onIncrement(WebSocketSession session, Event event, Matcher matcher) {
+      do {
+         logger.info("Group [INCREMENT]: " + matcher.group("uid"));
+      } while (matcher.find());
+   }
+
+   @Controller(events = EventType.MESSAGE, pattern = DEC_RE)
+   public void onDecrement(WebSocketSession session, Event event, Matcher matcher) {
+      do {
+         logger.info("Group [DECREMENT]: " + matcher.group("uid"));
+      } while (matcher.find());
+   }
 }
