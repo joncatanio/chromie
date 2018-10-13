@@ -10,6 +10,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -22,8 +23,8 @@ public class KarmaRepositoryTest extends BaseTest {
     KarmaRepository karmaRepository;
 
     @Test
-    public void getKarmaForUser() {
-        Instant createdTime = Instant.now();
+    public void testGetKarmaForUser() {
+        Date createdTime = Date.from(Instant.now());
 
         // Create at least two users to be able to add karma records.
         User user1 = new User()

@@ -8,21 +8,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.Instant;
+import java.util.Date;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class UserRepositoryTest extends BaseTest {
+
     @Autowired
     UserRepository userRepository;
 
     @Test
-    public void saveAndFindUser() {
-        Instant createdTime = Instant.now();
+    public void testSaveAndFindUser() {
+        Date createdTime = Date.from(Instant.now());
         User expected = new User()
             .setSlackId("NYY99")
             .setCreatedTime(createdTime);
 
         userRepository.save(expected);
-        User actual = userRepository.findBySlackId("NYY99");
+        User actual = userRepository.findBySlackId("NYY99").get();
 
         Assert.assertEquals(expected.getSlackId(), actual.getSlackId());
         Assert.assertEquals(false, actual.getDeleted());
@@ -31,9 +33,9 @@ public class UserRepositoryTest extends BaseTest {
     }
 
     @Test
-    public void markUserAsDeleted() {
-        Instant createdTime = Instant.now();
-        Instant modifiedTime = Instant.now();
+    public void testMarkUserAsDeleted() {
+        Date createdTime = Date.from(Instant.now());
+        Date modifiedTime = Date.from(Instant.now());
         User expected = new User()
                 .setSlackId("NYY99")
                 .setCreatedTime(createdTime);
@@ -43,7 +45,7 @@ public class UserRepositoryTest extends BaseTest {
             .setModifiedTime(modifiedTime);
         userRepository.save(expected);
 
-        User actual = userRepository.findBySlackId("NYY99");
+        User actual = userRepository.findBySlackId("NYY99").get();
         Assert.assertEquals(expected.getSlackId(), actual.getSlackId());
         Assert.assertEquals(true, actual.getDeleted());
         Assert.assertEquals(expected.getCreatedTime(), actual.getCreatedTime());

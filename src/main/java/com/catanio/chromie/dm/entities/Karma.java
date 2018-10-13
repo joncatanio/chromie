@@ -1,13 +1,14 @@
 package com.catanio.chromie.dm.entities;
 
 import javax.persistence.*;
-import java.time.Instant;
+import java.util.Date;
 
 @Entity
 @Table(name = "karma")
 public class Karma {
 
-    public Karma() {}
+    public Karma() {
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,8 +34,10 @@ public class Karma {
     private Integer points;
 
     @Column(name = "created_time",
+            columnDefinition = "TIMESTAMP",
             nullable = false)
-    private Instant createdTime;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdTime;
 
     public Long getId() {
         return id;
@@ -72,11 +75,11 @@ public class Karma {
         return this;
     }
 
-    public Instant getCreatedTime() {
+    public Date getCreatedTime() {
         return createdTime;
     }
 
-    public Karma setCreatedTime(Instant createdTime) {
+    public Karma setCreatedTime(Date createdTime) {
         this.createdTime = createdTime;
         return this;
     }

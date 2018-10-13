@@ -1,13 +1,14 @@
 package com.catanio.chromie.dm.entities;
 
 import javax.persistence.*;
-import java.time.Instant;
+import java.util.Date;
 
 @Entity
 @Table(name = "users")
 public class User {
 
-    public User() {}
+    public User() {
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,11 +27,15 @@ public class User {
     private Boolean deleted = false;
 
     @Column(name = "created_time",
+            columnDefinition = "TIMESTAMP",
             nullable = false)
-    private Instant createdTime;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdTime;
 
-    @Column(name = "modified_time")
-    private Instant modifiedTime;
+    @Column(name = "modified_time",
+            columnDefinition = "TIMESTAMP")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date modifiedTime;
 
     public Long getId() {
         return id;
@@ -59,20 +64,20 @@ public class User {
         return this;
     }
 
-    public Instant getCreatedTime() {
+    public Date getCreatedTime() {
         return createdTime;
     }
 
-    public User setCreatedTime(Instant createdTime) {
+    public User setCreatedTime(Date createdTime) {
         this.createdTime = createdTime;
         return this;
     }
 
-    public Instant getModifiedTime() {
+    public Date getModifiedTime() {
         return modifiedTime;
     }
 
-    public User setModifiedTime(Instant modifiedTime) {
+    public User setModifiedTime(Date modifiedTime) {
         this.modifiedTime = modifiedTime;
         return this;
     }
