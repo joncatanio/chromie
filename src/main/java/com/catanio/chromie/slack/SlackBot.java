@@ -105,7 +105,7 @@ public class SlackBot extends Bot {
         String recipientSlackId = event.getItemUser();
         Integer points = karmaReaction.getKarmaForReaction(event.getReaction());
 
-        logger.debug("Karma reaction from: " + donorSlackId + " to: "
+        logger.debug("[onReactionAdded] - karma reaction from: " + donorSlackId + " to: "
             + recipientSlackId + " for " + points + " points");
         if (points != 0) {
             StringBuilder sb = new StringBuilder();
@@ -129,7 +129,7 @@ public class SlackBot extends Bot {
         String recipientSlackId = event.getItemUser();
         Integer points = -karmaReaction.getKarmaForReaction(event.getReaction());
 
-        logger.debug("Karma reaction from: " + donorSlackId + " to: "
+        logger.debug("[onReactionRemoved] - karma reaction from: " + donorSlackId + " to: "
             + recipientSlackId + " for " + points + " points");
         if (points != 0 && !donorSlackId.equals(recipientSlackId)) {
             StringBuilder sb = new StringBuilder();
@@ -171,7 +171,7 @@ public class SlackBot extends Bot {
         if (karmaMap.isEmpty()) {
             return;
         }
-        logger.debug("Karma Map: " + karmaMap.toString());
+        logger.debug("[consolidateKarma] - karma Map: " + karmaMap.toString());
 
         StringBuilder sb = new StringBuilder();
         karmaMap.forEach((key, value) -> {
