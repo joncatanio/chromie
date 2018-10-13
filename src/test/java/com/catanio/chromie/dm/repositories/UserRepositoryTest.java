@@ -5,9 +5,11 @@ import com.catanio.chromie.dm.entities.User;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.Instant;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class UserRepositoryTest extends BaseTest {
     @Autowired
     UserRepository userRepository;
