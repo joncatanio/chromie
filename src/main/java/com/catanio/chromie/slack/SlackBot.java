@@ -2,6 +2,7 @@ package com.catanio.chromie.slack;
 
 import com.catanio.chromie.services.KarmaService;
 import com.catanio.chromie.util.KarmaRegex;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import me.ramswaroop.jbot.core.common.Controller;
 import me.ramswaroop.jbot.core.common.EventType;
 import me.ramswaroop.jbot.core.common.JBot;
@@ -93,20 +94,6 @@ public class SlackBot extends Bot {
         }
     }
 
-    /**
-     * Invoked when the bot receives a direct mention (@botname: message)
-     * or a direct message. NOTE: These two event types are added by jbot
-     * to make your task easier, Slack doesn't have any direct way to
-     * determine these type of events.
-     *
-     * @param session
-     * @param event
-     */
-    @Controller(events = {EventType.DIRECT_MENTION, EventType.DIRECT_MESSAGE})
-    public void onReceiveDM(WebSocketSession session, Event event) {
-        reply(session, event, "Hi, I am " + slackService.getCurrentUser().getName());
-    }
-
     @Controller(events = EventType.MESSAGE)
     public void onKarma(WebSocketSession session, Event event) {
         consolidateKarma(session, event);
@@ -157,11 +144,20 @@ public class SlackBot extends Bot {
     }
 
     private void consolidateKarma(WebSocketSession session, Event event) {
+        // If a message was edited the information will be attached as a message object.
+        // Probably need to make this a bit more robust to ensure all fields are there.
+        if (event.getText() == null) {
+            if (event.getMessage() == null)
+                return;
+            event.setUserId(event.getMessage().getUser());
+            event.setText(event.getMessage().getText());
+        }
+
         Map<String, Integer> karmaMap = new HashMap<>();
         String donorSlackId = event.getUserId();
+
         Matcher incMatcher = karmaRegex.getIncMatcher(event.getText());
         Matcher decMatcher = karmaRegex.getDecMatcher(event.getText());
-
         while (incMatcher.find()) {
             String recipientSlackId = incMatcher.group("uid");
             karmaMap.put(recipientSlackId, karmaMap.getOrDefault(recipientSlackId, 0) + 1);

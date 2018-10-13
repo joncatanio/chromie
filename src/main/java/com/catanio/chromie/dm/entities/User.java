@@ -27,7 +27,7 @@ public class User {
     private Boolean deleted = false;
 
     @Column(name = "created_time",
-            columnDefinition = "TIMESTAMP",
+            columnDefinition = "DATETIME",
             nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdTime;

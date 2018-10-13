@@ -34,7 +34,7 @@ public class Karma {
     private Integer points;
 
     @Column(name = "created_time",
-            columnDefinition = "TIMESTAMP",
+            columnDefinition = "DATETIME",
             nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdTime;
