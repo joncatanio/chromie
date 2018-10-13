@@ -27,4 +27,24 @@ public class UserRepositoryTest extends BaseTest {
         Assert.assertEquals(expected.getCreatedTime(), actual.getCreatedTime());
         Assert.assertEquals(null, actual.getModifiedTime());
     }
+
+    @Test
+    public void markUserAsDeleted() {
+        Instant createdTime = Instant.now();
+        Instant modifiedTime = Instant.now();
+        User expected = new User()
+                .setSlackId("NYY99")
+                .setCreatedTime(createdTime);
+
+        userRepository.save(expected);
+        expected.setDeleted(true)
+            .setModifiedTime(modifiedTime);
+        userRepository.save(expected);
+
+        User actual = userRepository.findBySlackId("NYY99");
+        Assert.assertEquals(expected.getSlackId(), actual.getSlackId());
+        Assert.assertEquals(true, actual.getDeleted());
+        Assert.assertEquals(expected.getCreatedTime(), actual.getCreatedTime());
+        Assert.assertEquals(modifiedTime, actual.getModifiedTime());
+    }
 }

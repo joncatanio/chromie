@@ -10,6 +10,7 @@ public class Karma {
     public Karma() {}
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id",
             unique = true,
             nullable = false)
