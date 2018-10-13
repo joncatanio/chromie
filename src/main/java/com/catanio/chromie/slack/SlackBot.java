@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * A simple Slack Bot. You can create multiple bots by just
@@ -40,14 +39,18 @@ public class SlackBot extends Bot {
 
     private KarmaRegex karmaRegex;
 
+    private KarmaReaction karmaReaction;
+
     @Value("${slackBotToken}")
     private String slackToken;
 
     @Autowired
     public SlackBot(KarmaService karmaService,
-                    KarmaRegex karmaRegex) {
+                    KarmaRegex karmaRegex,
+                    KarmaReaction karmaReaction) {
         this.karmaService = karmaService;
         this.karmaRegex = karmaRegex;
+        this.karmaReaction = karmaReaction;
     }
 
     @Override
@@ -109,10 +112,53 @@ public class SlackBot extends Bot {
         consolidateKarma(session, event);
     }
 
+    @Controller(events = EventType.REACTION_ADDED)
+    public void onReactionAdded(WebSocketSession session, Event event) {
+        String donorSlackId = event.getUserId();
+        String recipientSlackId = event.getItemUser();
+        Integer points = karmaReaction.getKarmaForReaction(event.getReaction());
+
+        logger.debug("Karma reaction from: " + donorSlackId + " to: "
+            + recipientSlackId + " for " + points + " points");
+        if (points != 0) {
+            StringBuilder sb = new StringBuilder();
+            if (!donorSlackId.equals(recipientSlackId)) {
+                Long totalKarma = karmaService.updateKarma(donorSlackId, recipientSlackId, points);
+                sb.append("<@" + recipientSlackId + "> [" + totalKarma + " points]\n");
+            } else {
+                sb.append("Nice try, you can't give yourself karma!");
+            }
+
+            // Get the channel id from the Item object and update the event.
+            event.setChannelId(event.getItem().getChannel());
+
+            replyUnencoded(session, event, sb.toString());
+        }
+    }
+
+    @Controller(events = EventType.REACTION_REMOVED)
+    public void onReactionRemoved(WebSocketSession session, Event event) {
+        String donorSlackId = event.getUserId();
+        String recipientSlackId = event.getItemUser();
+        Integer points = -karmaReaction.getKarmaForReaction(event.getReaction());
+
+        logger.debug("Karma reaction from: " + donorSlackId + " to: "
+            + recipientSlackId + " for " + points + " points");
+        if (points != 0 && !donorSlackId.equals(recipientSlackId)) {
+            StringBuilder sb = new StringBuilder();
+            Long totalKarma = karmaService.updateKarma(donorSlackId, recipientSlackId, points);
+            sb.append("<@" + recipientSlackId + "> [" + totalKarma + " points]\n");
+
+            // Get the channel id from the Item object and update the event.
+            event.setChannelId(event.getItem().getChannel());
+
+            replyUnencoded(session, event, sb.toString());
+        }
+    }
+
     private void consolidateKarma(WebSocketSession session, Event event) {
         Map<String, Integer> karmaMap = new HashMap<>();
         String donorSlackId = event.getUserId();
-        logger.info("Event text: " + event.getText());
         Matcher incMatcher = karmaRegex.getIncMatcher(event.getText());
         Matcher decMatcher = karmaRegex.getDecMatcher(event.getText());
 
@@ -126,10 +172,10 @@ public class SlackBot extends Bot {
             karmaMap.put(recipientSlackId, karmaMap.getOrDefault(recipientSlackId, 0) - 1);
         }
 
-        logger.info("Karma Map: " + karmaMap.toString());
         if (karmaMap.isEmpty()) {
             return;
         }
+        logger.debug("Karma Map: " + karmaMap.toString());
 
         StringBuilder sb = new StringBuilder();
         karmaMap.forEach((key, value) -> {
