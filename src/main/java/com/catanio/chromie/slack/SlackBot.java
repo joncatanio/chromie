@@ -1,6 +1,7 @@
 package com.catanio.chromie.slack;
 
 import com.catanio.chromie.services.KarmaService;
+import com.catanio.chromie.util.KarmaRegex;
 import me.ramswaroop.jbot.core.common.Controller;
 import me.ramswaroop.jbot.core.common.EventType;
 import me.ramswaroop.jbot.core.common.JBot;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A simple Slack Bot. You can create multiple bots by just
@@ -34,15 +36,19 @@ import java.util.regex.Matcher;
 public class SlackBot extends Bot {
     private static final Logger logger = LoggerFactory.getLogger(SlackBot.class);
 
-    // Regular Expressions
-    private static final String INC_RE = "<@(?<uid>[\\p{Alpha}0-9]+)>\\s?\\+\\+";
-    private static final String DEC_RE = "<@(?<uid>[\\p{Alpha}0-9]+)>\\s?--";
+    private KarmaService karmaService;
 
-    @Autowired
-    KarmaService karmaService;
+    private KarmaRegex karmaRegex;
 
     @Value("${slackBotToken}")
     private String slackToken;
+
+    @Autowired
+    public SlackBot(KarmaService karmaService,
+                    KarmaRegex karmaRegex) {
+        this.karmaService = karmaService;
+        this.karmaRegex = karmaRegex;
+    }
 
     @Override
     public String getSlackToken() {
@@ -98,33 +104,43 @@ public class SlackBot extends Bot {
         reply(session, event, "Hi, I am " + slackService.getCurrentUser().getName());
     }
 
-    @Controller(events = EventType.MESSAGE, pattern = INC_RE)
-    public void onIncrement(WebSocketSession session, Event event, Matcher matcher) {
+    @Controller(events = EventType.MESSAGE)
+    public void onKarma(WebSocketSession session, Event event) {
+        consolidateKarma(session, event);
+    }
+
+    private void consolidateKarma(WebSocketSession session, Event event) {
         Map<String, Integer> karmaMap = new HashMap<>();
         String donorSlackId = event.getUserId();
+        logger.info("Event text: " + event.getText());
+        Matcher incMatcher = karmaRegex.getIncMatcher(event.getText());
+        Matcher decMatcher = karmaRegex.getDecMatcher(event.getText());
 
-        do {
-            String recipientSlackId = matcher.group("uid");
-
+        while (incMatcher.find()) {
+            String recipientSlackId = incMatcher.group("uid");
             karmaMap.put(recipientSlackId, karmaMap.getOrDefault(recipientSlackId, 0) + 1);
-        } while (matcher.find());
+        }
+
+        while (decMatcher.find()) {
+            String recipientSlackId = decMatcher.group("uid");
+            karmaMap.put(recipientSlackId, karmaMap.getOrDefault(recipientSlackId, 0) - 1);
+        }
 
         logger.info("Karma Map: " + karmaMap.toString());
+        if (karmaMap.isEmpty()) {
+            return;
+        }
 
         StringBuilder sb = new StringBuilder();
         karmaMap.forEach((key, value) -> {
-            Long totalKarma = karmaService.updateKarma(donorSlackId, key, value);
-
-            sb.append("<@" + key + "> [" + totalKarma + " points]\n");
+            if (!key.equals(donorSlackId)) {
+                Long totalKarma = karmaService.updateKarma(donorSlackId, key, value);
+                sb.append("<@" + key + "> [" + totalKarma + " points]\n");
+            } else {
+                sb.append("Nice try, you can't give yourself karma!");
+            }
         });
 
         replyUnencoded(session, event, sb.toString());
-    }
-
-    @Controller(events = EventType.MESSAGE, pattern = DEC_RE)
-    public void onDecrement(WebSocketSession session, Event event, Matcher matcher) {
-        do {
-            logger.info("Group [DECREMENT]: " + matcher.group("uid"));
-        } while (matcher.find());
     }
 }
