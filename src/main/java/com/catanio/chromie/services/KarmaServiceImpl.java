@@ -1,6 +1,7 @@
 package com.catanio.chromie.services;
 
 import com.catanio.chromie.entities.Karma;
+import com.catanio.chromie.entities.KarmaFromDonorSum;
 import com.catanio.chromie.entities.User;
 import com.catanio.chromie.repositories.KarmaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class KarmaServiceImpl implements KarmaService {
@@ -49,5 +51,34 @@ public class KarmaServiceImpl implements KarmaService {
         karmaRepository.save(karma);
 
         return karmaRepository.sumKarmaForSlackId(recipientSlackId);
+    }
+
+    /**
+     * Details a user's total karma by providing insight on which donors
+     * granted karma to a given user.
+     *
+     * @param   slackId the Slack ID of the recipient
+     * @return  a formatted String with the breakdown of the recipient's karma
+     */
+    public String getKarmaBreakdown(String slackId) {
+        List<KarmaFromDonorSum> fromDonorsSum = karmaRepository.sumKarmaFromDonorsFor(slackId);
+        StringBuilder sb = new StringBuilder();
+
+        if (fromDonorsSum.isEmpty()) {
+            return "There has been no karma awarded to <@" + slackId + "> :(";
+        }
+
+        sb.append("Karma breakdown for: <@");
+        sb.append(slackId);
+        sb.append(">\n");
+        for (KarmaFromDonorSum fromDonorSum : fromDonorsSum) {
+            sb.append("_");
+            sb.append(fromDonorSum.getTotalPoints());
+            sb.append(" points from <@");
+            sb.append(fromDonorSum.getDonor().getSlackId());
+            sb.append(">_\n");
+        }
+
+        return sb.toString();
     }
 }
