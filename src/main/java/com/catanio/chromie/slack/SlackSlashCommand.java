@@ -47,14 +47,6 @@ public class SlackSlashCommand {
                                         @RequestParam("response_url") String responseUrl) {
         RichMessage richMessage = new RichMessage();
         richMessage.setResponseType("in_channel");
-
-        // Validate Token
-        if (!token.equals(this.slackToken)) {
-            logger.info("onKarmaBreakdown -- invalid Slack token provided.");
-            richMessage.setText("Whoops, looks like you don't have access to this command...");
-            return richMessage;
-        }
-
         logger.info("User " + userName + " (" + userId + ") has requested a karma breakdown.");
 
         Matcher slackIdMatcher = karmaRegex.getSlackIdMatcher(text);
