@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SlackSlashCommand {
     private static final Logger logger = LoggerFactory.getLogger(SlackSlashCommand.class);
 
-    @RequestMapping(value = "/karma-breakdown",
+    @RequestMapping(value = "/karma/breakdown",
                     method = RequestMethod.POST,
                     consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public RichMessage onKarmaBreakdown(@RequestParam("token") String token,
