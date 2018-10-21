@@ -32,6 +32,7 @@ public class SlackSlashCommand {
                                         @RequestParam("text") String text,
                                         @RequestParam("response_url") String responseUrl) {
         logger.info("User " + userName + " (" + user_id + ") has requested a karma breakdown.");
+        logger.info("Token: " + token);
 
         RichMessage richMessage = new RichMessage("Karma Breakdown");
         richMessage.setResponseType("in_channel");
