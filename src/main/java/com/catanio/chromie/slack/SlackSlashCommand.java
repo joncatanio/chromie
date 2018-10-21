@@ -55,7 +55,7 @@ public class SlackSlashCommand {
         } else {
             logger.info("No match found for Slack ID, text: \"" + text + "\"");
             richMessage.setText("I wasn't able to decipher a user from your command, " +
-                "perhaps it was incorrectly formatted");
+                "perhaps it was incorrectly formatted?");
             return richMessage;
         }
 
