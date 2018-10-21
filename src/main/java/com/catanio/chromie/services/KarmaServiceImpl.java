@@ -63,6 +63,7 @@ public class KarmaServiceImpl implements KarmaService {
      */
     public String getKarmaBreakdown(String slackId) {
         List<KarmaFromDonorSum> fromDonorsSum = karmaRepository.sumKarmaFromDonorsFor(slackId);
+        Long totalKarma = karmaRepository.sumKarmaForSlackId(slackId);
         StringBuilder sb = new StringBuilder();
 
         if (fromDonorsSum.isEmpty()) {
@@ -71,9 +72,11 @@ public class KarmaServiceImpl implements KarmaService {
 
         fromDonorsSum.sort(Comparator.comparing(KarmaFromDonorSum::getTotalPoints));
 
-        sb.append("Karma breakdown for: <@");
+        sb.append("Karma breakdown for <@");
         sb.append(slackId);
-        sb.append(">\n");
+        sb.append("> [");
+        sb.append(totalKarma);
+        sb.append(" points]...\n");
         for (KarmaFromDonorSum fromDonorSum : fromDonorsSum) {
             sb.append("_*");
             sb.append(String.format("%4d", fromDonorSum.getTotalPoints()));
