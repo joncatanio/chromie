@@ -2,7 +2,6 @@ package com.catanio.chromie.slack;
 
 import com.catanio.chromie.services.KarmaService;
 import com.catanio.chromie.util.KarmaRegex;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import me.ramswaroop.jbot.core.common.Controller;
 import me.ramswaroop.jbot.core.common.EventType;
 import me.ramswaroop.jbot.core.common.JBot;

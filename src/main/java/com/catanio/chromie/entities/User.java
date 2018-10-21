@@ -1,4 +1,4 @@
-package com.catanio.chromie.dm.entities;
+package com.catanio.chromie.entities;
 
 import javax.persistence.*;
 import java.util.Date;

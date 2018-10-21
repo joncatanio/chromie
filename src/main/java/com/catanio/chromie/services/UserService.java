@@ -1,6 +1,6 @@
 package com.catanio.chromie.services;
 
-import com.catanio.chromie.dm.entities.User;
+import com.catanio.chromie.entities.User;
 
 public interface UserService {
     User addUser(String slackId);

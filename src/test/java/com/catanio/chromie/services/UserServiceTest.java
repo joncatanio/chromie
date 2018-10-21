@@ -1,7 +1,7 @@
 package com.catanio.chromie.services;
 
 import com.catanio.chromie.BaseTest;
-import com.catanio.chromie.dm.entities.User;
+import com.catanio.chromie.entities.User;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;

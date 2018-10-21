@@ -1,8 +1,8 @@
 package com.catanio.chromie.services;
 
-import com.catanio.chromie.dm.entities.Karma;
-import com.catanio.chromie.dm.entities.User;
-import com.catanio.chromie.dm.repositories.KarmaRepository;
+import com.catanio.chromie.entities.Karma;
+import com.catanio.chromie.entities.User;
+import com.catanio.chromie.repositories.KarmaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;

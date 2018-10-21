@@ -1,6 +1,6 @@
-package com.catanio.chromie.dm.repositories;
+package com.catanio.chromie.repositories;
 
-import com.catanio.chromie.dm.entities.Karma;
+import com.catanio.chromie.entities.Karma;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

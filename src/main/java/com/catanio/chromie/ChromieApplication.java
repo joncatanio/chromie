@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication(scanBasePackages = {"me.ramswaroop.jbot", "com.catanio.chromie"})
-@EntityScan(basePackages = "com.catanio.chromie.dm.entities")
-@EnableJpaRepositories("com.catanio.chromie.dm.repositories")
+@EntityScan(basePackages = "com.catanio.chromie.entities")
+@EnableJpaRepositories("com.catanio.chromie.repositories")
 public class ChromieApplication {
     @Bean
     public RestTemplate restTemplate() {

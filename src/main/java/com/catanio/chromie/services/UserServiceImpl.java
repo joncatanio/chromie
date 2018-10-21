@@ -1,7 +1,7 @@
 package com.catanio.chromie.services;
 
-import com.catanio.chromie.dm.entities.User;
-import com.catanio.chromie.dm.repositories.UserRepository;
+import com.catanio.chromie.entities.User;
+import com.catanio.chromie.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
