@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -68,13 +69,15 @@ public class KarmaServiceImpl implements KarmaService {
             return "There has been no karma awarded to <@" + slackId + "> :(";
         }
 
+        fromDonorsSum.sort(Comparator.comparing(KarmaFromDonorSum::getTotalPoints));
+
         sb.append("Karma breakdown for: <@");
         sb.append(slackId);
         sb.append(">\n");
         for (KarmaFromDonorSum fromDonorSum : fromDonorsSum) {
-            sb.append("_");
-            sb.append(fromDonorSum.getTotalPoints());
-            sb.append(" points from <@");
+            sb.append("_*");
+            sb.append(String.format("%4d", fromDonorSum.getTotalPoints()));
+            sb.append("* points from <@");
             sb.append(fromDonorSum.getDonor().getSlackId());
             sb.append(">_\n");
         }
