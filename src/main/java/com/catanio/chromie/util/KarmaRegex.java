@@ -10,7 +10,7 @@ public class KarmaRegex {
     // Regular Expressions
     private static final String INC_RE = "<@(?<uid>[\\p{Alpha}0-9]+)>\\s?\\+\\+";
     private static final String DEC_RE = "<@(?<uid>[\\p{Alpha}0-9]+)>\\s?--";
-    private static final String SLACK_ID_RE = "^<@(?<slackId>[\\p{Alpha}0-9]+)>$";
+    private static final String SLACK_ID_RE = "^<@(?<slackId>[\\p{Alpha}0-9]+)|(?<slackUsername>.*)>$";
     private Pattern incPattern;
     private Pattern decPattern;
     private Pattern slackIdPattern;
