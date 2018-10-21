@@ -2,6 +2,7 @@ package com.catanio.chromie.services;
 
 import com.catanio.chromie.entities.Karma;
 import com.catanio.chromie.entities.KarmaFromDonorSum;
+import com.catanio.chromie.entities.TotalUserKarma;
 import com.catanio.chromie.entities.User;
 import com.catanio.chromie.repositories.KarmaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ public class KarmaServiceImpl implements KarmaService {
     private UserService userService;
 
     private KarmaRepository karmaRepository;
+
+    private static final Integer LEADERBOARD_SIZE = 5;
 
     @Autowired
     public KarmaServiceImpl(ApplicationContext context,
@@ -83,6 +86,34 @@ public class KarmaServiceImpl implements KarmaService {
             sb.append("* points from <@");
             sb.append(fromDonorSum.getDonor().getSlackId());
             sb.append(">_\n");
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * Retrieves the karma leaderboard.
+     *
+     * @return a formatted String of the current karma leaderboad (top 5)
+     */
+    public String getKarmaLeaderboard() {
+        List<TotalUserKarma> totalUserKarma = karmaRepository.sumKarmaForUsers();
+        StringBuilder sb = new StringBuilder();
+
+        if (totalUserKarma.isEmpty()) {
+            return "Looks like there hasn't been any karma distributed :(";
+        }
+
+        totalUserKarma.sort(Comparator.comparing(TotalUserKarma::getPoints).reversed());
+
+        sb.append("Karma Leaderboard\n");
+        for (int i = 0; i < totalUserKarma.size() && i < LEADERBOARD_SIZE; i++) {
+            sb.append(i + 1);
+            sb.append(" - <@");
+            sb.append(totalUserKarma.get(i).getUser().getSlackId());
+            sb.append("> _[*");
+            sb.append(totalUserKarma.get(i).getPoints());
+            sb.append("* points]_\n");
         }
 
         return sb.toString();

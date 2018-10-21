@@ -69,4 +69,34 @@ public class SlackSlashCommand {
 
         return richMessage;
     }
+
+    @RequestMapping(value = "/karma/leaderboard",
+        method = RequestMethod.POST,
+        consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public RichMessage onKarmaLeaderboard(@RequestParam("token") String token,
+                                        @RequestParam("team_id") String teamId,
+                                        @RequestParam("team_domain") String teamDomain,
+                                        @RequestParam("channel_id") String channelId,
+                                        @RequestParam("channel_name") String channelName,
+                                        @RequestParam("user_id") String userId,
+                                        @RequestParam("user_name") String userName,
+                                        @RequestParam("command") String command,
+                                        @RequestParam("text") String text,
+                                        @RequestParam("response_url") String responseUrl) {
+        RichMessage richMessage = new RichMessage();
+        richMessage.setResponseType("in_channel");
+        logger.info("User " + userName + " (" + userId + ") has requested the karma leaderboard.");
+
+        richMessage.setText(karmaService.getKarmaLeaderboard());
+
+        if (logger.isDebugEnabled()) {
+            try {
+                logger.debug("Reply (RichMessage): {}", new ObjectMapper().writeValueAsString(richMessage));
+            } catch (JsonProcessingException e) {
+                logger.debug("Error parsing RichMessage: ", e);
+            }
+        }
+
+        return richMessage;
+    }
 }
