@@ -70,7 +70,7 @@ public class KarmaServiceImpl implements KarmaService {
             return "There has been no karma awarded to <@" + slackId + "> :(";
         }
 
-        fromDonorsSum.sort(Comparator.comparing(KarmaFromDonorSum::getTotalPoints));
+        fromDonorsSum.sort(Comparator.comparing(KarmaFromDonorSum::getTotalPoints).reversed());
 
         sb.append("Karma breakdown for <@");
         sb.append(slackId);
@@ -79,7 +79,7 @@ public class KarmaServiceImpl implements KarmaService {
         sb.append(" points]...\n");
         for (KarmaFromDonorSum fromDonorSum : fromDonorsSum) {
             sb.append("_*");
-            sb.append(String.format("%4d", fromDonorSum.getTotalPoints()));
+            sb.append(fromDonorSum.getTotalPoints());
             sb.append("* points from <@");
             sb.append(fromDonorSum.getDonor().getSlackId());
             sb.append(">_\n");
