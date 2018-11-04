@@ -110,7 +110,14 @@ public class SlackBot extends Bot {
             StringBuilder sb = new StringBuilder();
             if (!donorSlackId.equals(recipientSlackId)) {
                 Long totalKarma = karmaService.updateKarma(donorSlackId, recipientSlackId, points);
-                sb.append("<@" + recipientSlackId + "> [" + totalKarma + " points]\n");
+                sb.append("<@");
+                sb.append(donorSlackId);
+                sb.append("> grants karma to ");
+                sb.append("<@");
+                sb.append(recipientSlackId);
+                sb.append("> [");
+                sb.append(totalKarma);
+                sb.append(" points]\n");
             } else {
                 sb.append("Nice try, you can't give yourself karma!");
             }
@@ -133,7 +140,14 @@ public class SlackBot extends Bot {
         if (points != 0 && !donorSlackId.equals(recipientSlackId)) {
             StringBuilder sb = new StringBuilder();
             Long totalKarma = karmaService.updateKarma(donorSlackId, recipientSlackId, points);
-            sb.append("<@" + recipientSlackId + "> [" + totalKarma + " points]\n");
+            sb.append("<@");
+            sb.append(donorSlackId);
+            sb.append("> takes karma from ");
+            sb.append("<@");
+            sb.append(recipientSlackId);
+            sb.append("> [");
+            sb.append(totalKarma);
+            sb.append(" points]\n");
 
             // Get the channel id from the Item object and update the event.
             event.setChannelId(event.getItem().getChannel());
