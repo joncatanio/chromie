@@ -104,11 +104,11 @@ public class SlackBot extends Bot {
         String recipientSlackId = event.getItemUser();
         Integer points = karmaReaction.getKarmaForReaction(event.getReaction());
 
-        logger.debug("[onReactionAdded] - karma reaction from: " + donorSlackId + " to: "
-            + recipientSlackId + " for " + points + " points");
         if (points != 0) {
             StringBuilder sb = new StringBuilder();
             if (!donorSlackId.equals(recipientSlackId)) {
+                logger.debug("[onReactionAdded] - karma reaction from: " + donorSlackId + " to: "
+                    + recipientSlackId + " for " + points + " points");
                 Long totalKarma = karmaService.updateKarma(donorSlackId, recipientSlackId, points);
                 sb.append("<@");
                 sb.append(donorSlackId);
@@ -135,9 +135,9 @@ public class SlackBot extends Bot {
         String recipientSlackId = event.getItemUser();
         Integer points = -karmaReaction.getKarmaForReaction(event.getReaction());
 
-        logger.debug("[onReactionRemoved] - karma reaction from: " + donorSlackId + " to: "
-            + recipientSlackId + " for " + points + " points");
         if (points != 0 && !donorSlackId.equals(recipientSlackId)) {
+            logger.debug("[onReactionRemoved] - karma reaction from: " + donorSlackId + " to: "
+                + recipientSlackId + " for " + points + " points");
             StringBuilder sb = new StringBuilder();
             Long totalKarma = karmaService.updateKarma(donorSlackId, recipientSlackId, points);
             sb.append("<@");
